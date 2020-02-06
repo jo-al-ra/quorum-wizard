@@ -105,13 +105,35 @@ To stop a network, run ./stop.sh for the same location
 
 ## Sample interation with the Quorum network
 
+### Bash
+
 In the your network's directory we provide a runscript.sh to run test contracts.
 
 A sample public-contract.js is provided to test deploying a simpleStorage public contract
 
-Sample private-contracts.js for a 3+ node network and a 7+ node network are provided. These will only be successful if the nodes in the network use the pregenerated 7nodes keys
+Sample private-contracts-3nodes.js for a 3+ node network and a private-contracts-7nodes.js for a 7+ node network are provided. These will only be successful if the nodes in the network use the pregenerated 7nodes keys
 
 If you chose to generate new tessera keys, you will need to replace the tessera public key in private-contract.js with the public key of the desired tessera recipient (tm.pub)
+
+### Docker
+
+For Docker we provide the same 3 contracts above
+
+Attach to the docker node:
+
+```
+docker exec -it {networkName}node1_1 geth attach /qdata/dd/geth.ipc
+```
+
+Run any of the contracts:
+
+```
+loadScript('\examples\private-contract-3nodes.js')
+```
+
+### Cakeshop
+
+If you selected to run cakeshop along with your network, you can also use its UI to send contracts to the network.  Cakeshop will have the correct tessera keys to send private transactions.
 
 ## Developing
 `yarn install` to get all the dependencies.
