@@ -1,9 +1,7 @@
 # Quorum Creator
 
 Quorum Creator is a tool that allows you to quickly set up and run Quorum networks.
-
 You can control consensus, privacy, network details and more for a customized setup.
-
 Additionally you can choose to deploy our chain explorer, [Cakeshop](https://github.com/jpmorganchase/cakeshop), to easily view and monitor your network.
 
 ## Getting Started
@@ -32,7 +30,6 @@ The CLI has 3 options to generate the necessary files to start up your quorum ne
 ### Quickstart
 
 This is the fastest way to set up a quorum network.
-
 Selecting this option will create bash scripts to run a 3 node raft network with tessera and cakeshop
 
 To start the network:
@@ -58,10 +55,9 @@ To easily test the network we provide a private contract and a public contract:
 ### Replicating quorum-examples 7nodes network
 
 The easiest way to bring up the 7nodes network from [quorum-examples](https://github.com/jpmorganchase/quorum-examples/tree/master/examples/7nodes)
-
 This selection will use the pregenerated keys from 7nodes example.
-
 It also provides options for minor customization:
+
   * Consensus algorithm
     * Istanbul - a pbft inspired algorithm with transaction finality
     * Raft - provides faster blocktimes, transaction finality, on demand block creation
@@ -78,7 +74,6 @@ It also provides options for minor customization:
 ### Custom network
 
 The option designed for a fully customized quorum network.
-
 In addition to customizing consensus, node count, transaction manager, and cakeshop, this option provides even more customization:
 
   * Key generation
