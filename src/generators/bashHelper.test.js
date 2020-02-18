@@ -16,16 +16,17 @@ pathToQuorumBinary.mockReturnValue('geth')
 pathToTesseraJar.mockReturnValue('tessera')
 pathToCakeshop.mockReturnValue('cakeshop')
 
+const baseNetwork = {
+  numberNodes: '5',
+  consensus: 'raft',
+  quorumVersion: '2.4.0',
+  transactionManager: '0.10.2',
+  cakeshop: false,
+  deployment: 'bash'
+}
 describe('generates bash script details', () => {
   it('creates bash script given config details', () => {
-    let config = createReplica7NodesConfig({
-      numberNodes: '5',
-      consensus: 'raft',
-      quorumVersion: '2.4.0',
-      transactionManager: '0.10.2',
-      deployment: 'bash',
-      cakeshop: false
-    })
+    let config = createReplica7NodesConfig(baseNetwork)
     const expected = {
       startScript: `BIN_GETH=geth\nBIN_TESSERA=tessera\n\nstartTessera\n${waitForTesseraNodesCommand(config)}\nstartGeth\n`,
       initCommands: ['1', '2', '3', '4', '5'],
@@ -39,17 +40,9 @@ describe('generates bash script details', () => {
     expect(buildBashScript(config)).toEqual(expected)
   })
 })
-
 describe('builds bash directory', () => {
   it('given bash details builds files to run bash', async () => {
-    let config = createReplica7NodesConfig({
-      numberNodes: '5',
-      consensus: 'raft',
-      quorumVersion: '2.4.0',
-      transactionManager: '0.10.2',
-      deployment: 'bash',
-      cakeshop: false
-    })
+    let config = createReplica7NodesConfig(baseNetwork)
     createDirectory.mockReturnValueOnce({tesseraStart:  "startTessera",
         gethStart: "startGeth",
         initStart: ['1', '2', '3', '4', '5'],

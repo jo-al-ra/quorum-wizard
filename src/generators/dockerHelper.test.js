@@ -16,17 +16,18 @@ jest.mock('../generators/networkCreator')
 cwd.mockReturnValue(TEST_CWD)
 libRootDir.mockReturnValue(TEST_LIB_ROOT_DIR)
 
+const baseNetwork = {
+  numberNodes: '5',
+  consensus: 'raft',
+  quorumVersion: '2.4.0',
+  transactionManager: '0.10.2',
+  cakeshop: true,
+  deployment: 'docker-compose'
+}
+
 describe('generates docker-compose directory', () => {
   it('given docker details builds files to run docker', async () => {
-
-    let config = createReplica7NodesConfig({
-      numberNodes: '5',
-      consensus: 'raft',
-      quorumVersion: '2.4.0',
-      transactionManager: '0.10.2',
-      deployment: 'docker-compose',
-      cakeshop: false
-    })
+    let config = createReplica7NodesConfig(baseNetwork)
 
     createDirectory.mockReturnValueOnce({tesseraStart:  "",
         gethStart: "",
@@ -44,14 +45,10 @@ describe('generates docker-compose directory', () => {
 
 describe('generates docker-compose script details', () => {
   it('creates docker-compose script with quorum and tessera', () => {
-
     let config = createReplica7NodesConfig({
-      numberNodes: '1',
-      consensus: 'raft',
-      quorumVersion: '2.4.0',
-      transactionManager: '0.10.2',
-      deployment: 'docker-compose',
-      cakeshop: false
+      ...baseNetwork,
+      numberNodes:'1',
+      cakeshop:false
     })
     const services = `
 services:
@@ -107,14 +104,11 @@ volumes:
   })
 
   it('creates docker-compose script just quorum', () => {
-
     let config = createReplica7NodesConfig({
-      numberNodes: '1',
-      consensus: 'raft',
-      quorumVersion: '2.4.0',
+      ...baseNetwork,
+      numberNodes:'1',
       transactionManager: 'none',
-      deployment: 'docker-compose',
-      cakeshop: false
+      cakeshop:false
     })
     const services = `
 services:
@@ -153,13 +147,10 @@ volumes:
   })
 
   it('creates docker-compose script with quorum and cakeshop', () => {
-
     const config = createReplica7NodesConfig({
-      numberNodes: '1',
-      consensus: 'raft',
+      ...baseNetwork,
+      numberNodes:'1',
       transactionManager: 'none',
-      deployment: 'docker-compose',
-      cakeshop: true
     })
     const services = `
 services:
@@ -211,13 +202,9 @@ volumes:
   })
 
   it('creates docker-compose script with quorum, tessera and cakeshop', () => {
-
     const config = createReplica7NodesConfig({
-      numberNodes: '1',
-      consensus: 'raft',
-      transactionManager: '0.10.2',
-      deployment: 'docker-compose',
-      cakeshop: true
+      ...baseNetwork,
+      numberNodes:'1',
     })
     const services = `
 services:
