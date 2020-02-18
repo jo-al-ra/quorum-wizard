@@ -3,6 +3,7 @@ import {
   getDownloadableGethChoices, getDownloadableTesseraChoices,
   getGethOnPath, getTesseraOnPath,
 } from '../generators/binaryHelper'
+import { isBash } from '../model/NetworkConfig'
 
 
 export const INITIAL_MODE = {
@@ -78,7 +79,7 @@ export const QUORUM_VERSION = {
   message: 'Which version of Quorum would you like to use?',
   choices: ({deployment}) => {
     let choices = [...getDownloadableGethChoices()]
-    if(deployment === 'bash') {
+    if (isBash(deployment)) {
       choices = choices.concat(getGethOnPath())
     }
     return choices
@@ -91,7 +92,7 @@ export const TRANSACTION_MANAGER = {
   message: 'Choose a version of tessera if you would like to use private transactions in your network, otherwise choose "none"',
   choices: ({deployment}) => {
     let choices = [...getDownloadableTesseraChoices()]
-    if(deployment === 'bash') {
+    if (isBash(deployment)) {
       choices = choices.concat(getTesseraOnPath())
     }
     return choices.concat('none')

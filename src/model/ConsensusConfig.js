@@ -1,8 +1,9 @@
 import { writeJsonFile,} from '../utils/fileUtils'
 import {generateAccounts, generateExtraData } from '../generators/consensusHelper'
+import { isRaft } from './NetworkConfig'
 
 export function generateConsensusConfig(configDir, keyPath, consensus, nodes, networkId) {
-  return consensus === 'raft' ?  generateRaft(configDir, keyPath, nodes, networkId) :
+  return isRaft(consensus) ?  generateRaft(configDir, keyPath, nodes, networkId) :
   generateIstanbul(configDir, keyPath, nodes, networkId)
 }
 

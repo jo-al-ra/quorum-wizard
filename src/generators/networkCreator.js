@@ -12,7 +12,7 @@ import {
 import { generateKeys } from './keyGen'
 import { generateConsensusConfig } from '../model/ConsensusConfig'
 import { createConfig } from '../model/TesseraConfig'
-import { isTessera } from '../model/NetworkConfig'
+import { isTessera, isBash, isRaft } from '../model/NetworkConfig'
 import { createGethStartCommand, createTesseraStartCommand } from './bashHelper'
 import { pathToQuorumBinary } from './binaryHelper'
 
@@ -69,7 +69,7 @@ export function createDirectory (config) {
     copyFile(join(keyFolder, 'nodekey'), join(gethDir, 'nodekey'))
     copyFile(join(keyFolder, 'password.txt'), passwordDestination)
     copyFile(join(configPath, `${config.network.consensus}-genesis.json`), genesisDestination)
-    if(isTessera(config)) {
+    if(isTessera(config.network.transactionManager)) {
       copyFile(join(keyFolder, 'tm.key'), join(tmDir, 'tm.key'))
       copyFile(join(keyFolder, 'tm.pub'), join(tmDir, 'tm.pub'))
       let tesseraConfig = createConfig(tmDir, nodeNumber, node.tm.ip,
@@ -78,17 +78,17 @@ export function createDirectory (config) {
         tesseraConfig)
     }
 
-    if (config.network.deployment === 'bash') {
+    if (isBash(config.network.deployment)) {
       // TODO make this use the BIN_GETH env variable
       const initCommand = `cd ${networkPath} && ${pathToQuorumBinary(config.network.quorumVersion)} --datadir ${quorumDir} init ${genesisDestination}`
       initCommands.push(initCommand)
 
-      let tmIpcLocation = isTessera(config) ? join(tmDir, 'tm.ipc') : 'ignore'
+      let tmIpcLocation = isTessera(config.network.transactionManager) ? join(tmDir, 'tm.ipc') : 'ignore'
       const startCommand = createGethStartCommand(config, node,
         passwordDestination, nodeNumber, tmIpcLocation)
         startCommands.push(startCommand)
 
-      if (isTessera(config)) {
+      if (isTessera(config.network.transactionManager)) {
         const tmStartCommand = createTesseraStartCommand(config, node, nodeNumber,
           tmDir, logs)
         tmStartCommands.push(tmStartCommand)
@@ -112,7 +112,7 @@ export function createStaticNodes (nodes, consensus, configDir) {
     const enodeId = readFileToString(join(generatedKeyFolder, 'enode'))
 
     let enodeAddress = `enode://${enodeId}@${node.quorum.ip}:${node.quorum.devP2pPort}?discport=0`
-    if (consensus === 'raft') {
+    if (isRaft(consensus)) {
       enodeAddress += `&raftport=${node.quorum.raftPort}`
     }
     return enodeAddress
@@ -124,7 +124,7 @@ export function includeCakeshop(config) {
 }
 
 function createPeerList (nodes, transactionManager) {
-  if (transactionManager === 'none') {
+  if (isTessera(transactionManager)) {
     return []
   }
   return nodes.map((node) => ({
