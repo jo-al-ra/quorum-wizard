@@ -55,7 +55,7 @@ export const NUMBER_NODES = {
   type: 'input',
   name: 'numberNodes',
   message: (answers) => {
-    return answers.consensus === 'raft' ?
+    return isRaft(answers.consensus) ?
       'Input the number of nodes (2-7) you would like in your network - a minimum of 3 is recommended' :
       'Input the number of nodes (2-7) you would like in your network - a minimum of 3 is recommended for development, 5 to properly handle node failure'
   },
