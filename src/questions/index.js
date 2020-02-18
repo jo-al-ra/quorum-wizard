@@ -3,7 +3,9 @@ import {
   createReplica7NodesConfig,
   createCustomConfig,
   generateNodeConfigs,
-  isTessera
+  isTessera,
+  isBash,
+  isDocker
 } from '../model/NetworkConfig'
 import { buildBash } from '../generators/bashHelper'
 import { createDockerCompose } from '../generators/dockerHelper'
@@ -60,11 +62,11 @@ export async function customize () {
     CUSTOMIZE_PORTS
   ])
 
-  let nodes = (customAnswers.customizePorts && commonAnswers.deployment === 'bash') ?
-    await getCustomizedBashNodes(commonAnswers.numberNodes, commonAnswers.transactionManager !== 'none') : []
+  let nodes = (customAnswers.customizePorts && isBash(commonAnswers.deployment)) ?
+    await getCustomizedBashNodes(commonAnswers.numberNodes, isTessera(commonAnswers.transactionManager)) : []
 
-  let dockerCustom = (customAnswers.customizePorts && commonAnswers.deployment === 'docker-compose') ?
-    await getCustomizedDockerPorts(commonAnswers.transactionManager !== 'none') : undefined
+  let dockerCustom = (customAnswers.customizePorts && isDocker(commonAnswers.deployment)) ?
+    await getCustomizedDockerPorts(isTessera(commonAnswers.transactionManager)) : undefined
 
     const answers = {
       ...commonAnswers,
@@ -79,9 +81,9 @@ export async function customize () {
 
 async function buildNetwork(config, deployment) {
   console.log('')
-  if (deployment === 'bash') {
+  if (isBash(deployment)) {
     await buildBash(config)
-  } else if (deployment === 'docker-compose') {
+  } else if (isDocker(deployment)) {
     await createDockerCompose(config)
   }
   console.log('Done')
