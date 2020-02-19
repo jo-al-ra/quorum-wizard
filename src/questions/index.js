@@ -26,6 +26,7 @@ import {
 import inquirer from 'inquirer'
 import { cwd, readFileToString } from '../utils/fileUtils'
 import { join } from "path"
+import { createDirectory } from '../generators/networkCreator'
 
 export async function quickstart() {
   const config = createQuickstartConfig()
@@ -81,6 +82,7 @@ export async function customize () {
 
 async function buildNetwork(config, deployment) {
   console.log('')
+  createDirectory(config)
   if (isBash(deployment)) {
     await buildBash(config)
   } else if (isDocker(deployment)) {

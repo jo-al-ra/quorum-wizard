@@ -1,18 +1,15 @@
-import { writeJsonFile,} from '../utils/fileUtils'
-import {generateAccounts, generateExtraData } from '../generators/consensusHelper'
+import { writeJsonFile, } from '../utils/fileUtils'
+import { generateAccounts, generateExtraData } from '../generators/consensusHelper'
 import { isRaft } from './NetworkConfig'
 
-export function generateConsensusConfig(configDir, keyPath, consensus, nodes, networkId) {
-  return isRaft(consensus) ?  generateRaft(configDir, keyPath, nodes, networkId) :
-  generateIstanbul(configDir, keyPath, nodes, networkId)
-}
-
-function generateRaft(configDir, keyPath, nodes, networkId) {
-  writeJsonFile(configDir, 'raft-genesis.json', generateRaftConfig(nodes, keyPath, networkId))
-}
-
-function generateIstanbul(configDir, keyPath, nodes, networkId) {
-  writeJsonFile(configDir, 'istanbul-genesis.json', generateIstanbulConfig(nodes, configDir, keyPath, networkId))
+export function generateConsensusConfig (configDir, keyPath, consensus, nodes, networkId) {
+  writeJsonFile(
+    configDir,
+    'genesis.json',
+    isRaft(consensus) ?
+      generateRaftConfig(nodes, keyPath, networkId) :
+      generateIstanbulConfig(nodes, configDir, keyPath, networkId)
+  )
 }
 
 export function generateRaftConfig(nodes, keyPath, networkId) {
