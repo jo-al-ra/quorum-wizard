@@ -30,7 +30,7 @@ const CUSTOM_CONFIG = {
 }
 
 test('quickstart', async () => {
-  const fakeConfig = { network: {name: 'test'}}
+  const fakeConfig = { network: {name: 'test'}, nodes: []}
   createQuickstartConfig.mockReturnValue(fakeConfig)
   isBash.mockReturnValueOnce(true)
   isDocker.mockReturnValueOnce(false)
@@ -41,7 +41,7 @@ test('quickstart', async () => {
 })
 
 test('7nodes replica', async () => {
-  const fakeConfig = { network: {name: 'test'}}
+  const fakeConfig = { network: {name: 'test'}, nodes: []}
   prompt.mockResolvedValue(REPLICA_7NODES_CONFIG)
   createReplica7NodesConfig.mockReturnValue(fakeConfig)
   isBash.mockReturnValueOnce(true)
@@ -54,7 +54,7 @@ test('7nodes replica', async () => {
 })
 
 test('customize', async () => {
-  const fakeConfig = { network: {name: 'test'}}
+  const fakeConfig = { network: {name: 'test'}, nodes: []}
   createCustomConfig.mockReturnValue(fakeConfig)
   isBash.mockReturnValueOnce(true)
   isTessera.mockReturnValueOnce(true)

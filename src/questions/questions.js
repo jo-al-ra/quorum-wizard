@@ -3,7 +3,7 @@ import {
   getDownloadableGethChoices, getDownloadableTesseraChoices,
   getGethOnPath, getTesseraOnPath,
 } from '../generators/binaryHelper'
-import { isBash } from '../model/NetworkConfig'
+import { isBash, isRaft } from '../model/NetworkConfig'
 
 
 export const INITIAL_MODE = {

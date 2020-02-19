@@ -10,6 +10,7 @@ import {
 import { buildBash } from '../generators/bashHelper'
 import { createDockerCompose } from '../generators/dockerHelper'
 import { getCustomizedBashNodes, getCustomizedDockerPorts } from './promptHelper'
+import { generateAndCopyExampleScripts } from '../generators/examplesGenerator'
 import {
   CONSENSUS_MODE,
   DEPLOYMENT_TYPE,
@@ -92,14 +93,19 @@ async function buildNetwork(config, deployment) {
 
   console.log('')
   const qdata = join(cwd(), 'network', config.network.name, 'qdata')
+  const numNodes = config.nodes.length
   if(isTessera(config.network.transactionManager)) {
     console.log('--------------------------------------------------------------------------------')
     console.log('')
     config.nodes.forEach((node, i) => {
       const nodeNumber = i + 1
       console.log(`Tessera Node ${nodeNumber} public key:`)
-      console.log(`${readFileToString(join(qdata, `c${nodeNumber}`, 'tm.pub'))}`)
+      const pubKey = readFileToString(join(qdata, `c${nodeNumber}`, 'tm.pub'))
+      console.log(`${pubKey}`)
       console.log('')
+      if (nodeNumber == numNodes) {
+        generateAndCopyExampleScripts(pubKey, qdata)
+      }
     })
     console.log('--------------------------------------------------------------------------------')
   }

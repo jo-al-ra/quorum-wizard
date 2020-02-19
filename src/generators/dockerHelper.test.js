@@ -39,7 +39,6 @@ describe('generates docker-compose directory', () => {
     await createDockerCompose(config)
 
     expect(writeFile).toBeCalledTimes(3)
-    expect(copyFile).toBeCalledTimes(4)
   })
 })
 
