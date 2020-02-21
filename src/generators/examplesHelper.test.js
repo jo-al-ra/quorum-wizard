@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { anything } from 'expect'
-import { TEST_CWD, TEST_LIB_ROOT_DIR } from '../utils/testHelper'
+import { TEST_CWD, TEST_LIB_ROOT_DIR, createNetPath, createLibPath } from '../utils/testHelper'
 import { cwd, copyFile, libRootDir, writeFile } from '../utils/fileUtils'
 import { generateAndCopyExampleScripts } from './examplesHelper'
 
@@ -21,11 +21,3 @@ describe('generates and copies over example scripts', () => {
     expect(writeFile).toBeCalledWith(createNetPath(config, 'private-contract.js'), expect.anything())
   })
 })
-
-function createLibPath(...relativePaths) {
-  return join(libRootDir(), ...relativePaths)
-}
-
-function createNetPath(config, ...relativePaths) {
-  return join(cwd(), 'network', config.network.name, ...relativePaths)
-}

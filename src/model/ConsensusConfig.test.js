@@ -1,9 +1,15 @@
+import { join } from 'path'
 import {  generateNodeConfigs} from './NetworkConfig'
-import { generateRaftConfig, generateIstanbulConfig } from './ConsensusConfig'
+import { generateRaftConfig, generateIstanbulConfig, generateConsensusConfig } from './ConsensusConfig'
 import {generateAccounts, generateExtraData } from '../generators/consensusHelper'
-import { readFileToString } from '../utils/fileUtils'
+import { readFileToString, writeJsonFile, cwd, libRootDir } from '../utils/fileUtils'
+import { anything } from 'expect'
+import { TEST_CWD, TEST_LIB_ROOT_DIR, createNetPath } from '../utils/testHelper'
 
 jest.mock('../generators/consensusHelper')
+jest.mock('../utils/fileUtils')
+cwd.mockReturnValue(TEST_CWD)
+libRootDir.mockReturnValue(TEST_LIB_ROOT_DIR)
 
 test('creates 3nodes raft genesis', () => {
 
@@ -28,4 +34,24 @@ test('creates 5nodes istanbul genesis', () => {
 
   const genesis = generateIstanbulConfig(5, 'testDir', 'keyPath', 10)
   expect(genesis).toMatchSnapshot()
+})
+
+test('generates raft consensus file', () => {
+  const nodes = generateNodeConfigs(5)
+  const accts = '{"0x59b64581638fd8311423e007c5131b0d9287d069":{"balance":"1000000000000000000000000000"},"0x4e03a788769f04bb8ec13826d1efe6cd9ca46190":{"balance":"1000000000000000000000000000"},"0xb01a34cca09374a58068eda1c2d7e472f39ef413":{"balance":"1000000000000000000000000000"}, "0xdbd868dd04daf492b783587f50bdd82fbf9bda3f":{"balance":"1000000000000000000000000000"}, "0x62fdbfa6bebe19c812f3bceb3d2d16b00563862c":{"balance":"1000000000000000000000000000"}}'
+  generateAccounts
+  .mockReturnValueOnce(JSON.parse(accts))
+  const fakeConfig = { network: {name: 'test'}}
+  generateConsensusConfig('testConfigDir', 'keyPath', 'raft', nodes, 10)
+  expect(writeJsonFile).toBeCalledWith('testConfigDir', 'genesis.json', anything())
+})
+
+test('generates istanbul consensus file', () => {
+  const nodes = generateNodeConfigs(5)
+  const accts = '{"0x59b64581638fd8311423e007c5131b0d9287d069":{"balance":"1000000000000000000000000000"},"0x4e03a788769f04bb8ec13826d1efe6cd9ca46190":{"balance":"1000000000000000000000000000"},"0xb01a34cca09374a58068eda1c2d7e472f39ef413":{"balance":"1000000000000000000000000000"}, "0xdbd868dd04daf492b783587f50bdd82fbf9bda3f":{"balance":"1000000000000000000000000000"}, "0x62fdbfa6bebe19c812f3bceb3d2d16b00563862c":{"balance":"1000000000000000000000000000"}}'
+  generateAccounts
+  .mockReturnValueOnce(JSON.parse(accts))
+  const fakeConfig = { network: {name: 'test'}}
+  generateConsensusConfig('testConfigDir', 'keyPath', 'istanbul', nodes, 10)
+  expect(writeJsonFile).toBeCalledWith('testConfigDir', 'genesis.json', anything())
 })

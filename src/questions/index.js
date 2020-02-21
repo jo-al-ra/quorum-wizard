@@ -64,7 +64,6 @@ export async function customize () {
     // GENESIS_LOCATION,
     CUSTOMIZE_PORTS
   ])
-
   let nodes = (customAnswers.customizePorts && isBash(commonAnswers.deployment)) ?
     await getCustomizedBashNodes(commonAnswers.numberNodes, isTessera(commonAnswers.transactionManager)) : []
 
@@ -77,6 +76,7 @@ export async function customize () {
       nodes,
       dockerCustom
     }
+
   const config = createCustomConfig(answers)
 
   await buildNetwork(config, answers.deployment)

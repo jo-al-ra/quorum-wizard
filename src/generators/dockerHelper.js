@@ -10,18 +10,18 @@ import { getFullNetworkPath, includeCakeshop } from './networkCreator'
 import { buildCakeshopDir } from './cakeshopHelper'
 import { isTessera } from '../model/NetworkConfig'
 import { downloadAndCopyBinaries } from './binaryHelper'
-const yaml = require('js-yaml')
 import { info } from '../utils/log'
+const yaml = require('js-yaml')
 
 export function buildDockerCompose(config) {
   const hasTessera = isTessera(config.network.transactionManager)
   const hasCakeshop = includeCakeshop(config)
 
-  const quorumDefinitions = readFileToString(join(libRootDir(), 'lib/docker-compose-definitions-quorum.yml'))
+  const quorumDefinitions = readFileToString(join(libRootDir(), 'lib', 'docker-compose-definitions-quorum.yml'))
   const quorumExposedPorts = createCustomQuorumPorts(config.dockerCustom)
-  const tesseraDefinitions = hasTessera ? readFileToString(join(libRootDir(), 'lib/docker-compose-definitions-tessera.yml')) : ""
+  const tesseraDefinitions = hasTessera ? readFileToString(join(libRootDir(), 'lib', 'docker-compose-definitions-tessera.yml')) : ""
   const tesseraExposedPorts = hasTessera ? createCustomTesseraPorts(config.dockerCustom) : ""
-  const cakeshopDefinitions = hasCakeshop ? readFileToString(join(libRootDir(), 'lib/docker-compose-definitions-cakeshop.yml')) : ""
+  const cakeshopDefinitions = hasCakeshop ? readFileToString(join(libRootDir(), 'lib', 'docker-compose-definitions-cakeshop.yml')) : ""
 
   let services = config.nodes.map((node, i) => {
     let allServices = buildNodeService(node, i, hasTessera)

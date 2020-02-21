@@ -1,11 +1,16 @@
-import { buildBashScript } from './bashHelper'
+import { join } from 'path'
+import { buildBashScript,  buildBash } from './bashHelper'
 import { createCustomConfig, createQuickstartConfig, createReplica7NodesConfig } from '../model/NetworkConfig'
 import { cwd, libRootDir } from '../utils/fileUtils'
+import { execute } from '../utils/execUtils'
 import { TEST_CWD, TEST_LIB_ROOT_DIR } from '../utils/testHelper'
 import { generateAccounts } from './consensusHelper'
+import { downloadIfMissing } from './download'
 
 jest.mock('../utils/fileUtils')
 jest.mock('../generators/consensusHelper')
+jest.mock('../utils/execUtils')
+jest.mock('./download')
 cwd.mockReturnValue(TEST_CWD)
 libRootDir.mockReturnValue(TEST_LIB_ROOT_DIR)
 generateAccounts.mockReturnValue("accounts")
@@ -35,6 +40,15 @@ test('creates 3nodes raft bash tessera cakeshop', () => {
   const config = createReplica7NodesConfig({
     ...baseNetwork,
     cakeshop: true
+  })
+  const bash = buildBashScript(config).startScript
+  expect(bash).toMatchSnapshot()
+})
+
+test('creates 3nodes raft bash no tessera', () => {
+  const config = createReplica7NodesConfig({
+    ...baseNetwork,
+    transactionManager: 'none'
   })
   const bash = buildBashScript(config).startScript
   expect(bash).toMatchSnapshot()

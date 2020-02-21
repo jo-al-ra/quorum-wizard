@@ -8,7 +8,7 @@ import {
 } from '../utils/fileUtils'
 import { buildCakeshopDir } from './cakeshopHelper'
 import { anything } from 'expect'
-import { TEST_CWD, TEST_LIB_ROOT_DIR } from '../utils/testHelper'
+import { TEST_CWD, TEST_LIB_ROOT_DIR, createNetPath, createLibPath } from '../utils/testHelper'
 
 jest.mock('../utils/fileUtils')
 cwd.mockReturnValue(TEST_CWD)
@@ -32,11 +32,3 @@ describe('creates a cakeshop directory structure for bash', () => {
     expect(copyFile).toBeCalledWith(createLibPath('lib', 'cakeshop_application.properties.template'), createNetPath(config, 'qdata/cakeshop/local','application.properties'))
   })
 })
-
-function createLibPath(...relativePaths) {
-  return join(libRootDir(), ...relativePaths)
-}
-
-function createNetPath(config, ...relativePaths) {
-  return join(cwd(), 'network', config.network.name, ...relativePaths)
-}
