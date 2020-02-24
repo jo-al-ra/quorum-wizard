@@ -1,12 +1,38 @@
-import { createQuickstartConfig, createReplica7NodesConfig, createCustomConfig, isBash, isTessera, isDocker } from '../model/NetworkConfig'
-import { customize, quickstart, replica7Nodes } from './index'
+import { prompt } from 'inquirer'
+import {
+  createCustomConfig,
+  createQuickstartConfig,
+  createReplica7NodesConfig,
+  isBash,
+  isDocker,
+  isTessera,
+} from '../model/NetworkConfig'
+import {
+  customize,
+  quickstart,
+  replica7Nodes,
+} from './index'
 import { buildBash } from '../generators/bashHelper'
 import { createDockerCompose } from '../generators/dockerHelper'
-import { prompt } from 'inquirer'
-import { getCustomizedBashNodes, getCustomizedDockerPorts } from './promptHelper'
-import { createDirectory, includeCakeshop } from '../generators/networkCreator'
-import { copyFile, writeFile, cwd, libRootDir, readFileToString } from '../utils/fileUtils'
-import { TEST_CWD, TEST_LIB_ROOT_DIR } from '../utils/testHelper'
+import {
+  getCustomizedBashNodes,
+  getCustomizedDockerPorts,
+} from './promptHelper'
+import {
+  createDirectory,
+  includeCakeshop,
+} from '../generators/networkCreator'
+import {
+  copyFile,
+  writeFile,
+  readFileToString,
+  cwd,
+  libRootDir,
+} from '../utils/fileUtils'
+import {
+  TEST_CWD,
+  TEST_LIB_ROOT_DIR,
+} from '../utils/testHelper'
 
 jest.mock('inquirer')
 jest.mock('../model/NetworkConfig')
@@ -24,7 +50,7 @@ const REPLICA_7NODES_CONFIG = {
   quorumVersion: '2.4.0',
   transactionManager: '0.10.2',
   deployment: 'docker-compose',
-  cakeshop: false
+  cakeshop: false,
 }
 
 const CUSTOM_BASH_CONFIG = {
@@ -38,7 +64,7 @@ const CUSTOM_BASH_CONFIG = {
   networkId: 10,
   customizePorts: true,
   nodes: ['nodes'],
-  dockerCustom: undefined
+  dockerCustom: undefined,
 }
 
 const CUSTOM_DOCKER_CONFIG = {
@@ -52,11 +78,11 @@ const CUSTOM_DOCKER_CONFIG = {
   networkId: 10,
   customizePorts: true,
   nodes: [],
-  dockerCustom: ['ports']
+  dockerCustom: ['ports'],
 }
 
 test('quickstart', async () => {
-  const fakeConfig = { network: {name: 'test'}, nodes: ['nodes']}
+  const fakeConfig = { network: { name: 'test' }, nodes: ['nodes'] }
   createQuickstartConfig.mockReturnValue(fakeConfig)
   isBash.mockReturnValue(true)
   isDocker.mockReturnValue(false)
@@ -69,7 +95,7 @@ test('quickstart', async () => {
 })
 
 test('7nodes replica', async () => {
-  const fakeConfig = { network: {name: 'test'}, nodes: ['nodes']}
+  const fakeConfig = { network: { name: 'test' }, nodes: ['nodes'] }
   prompt.mockResolvedValue(REPLICA_7NODES_CONFIG)
   createReplica7NodesConfig.mockReturnValue(fakeConfig)
   isBash.mockReturnValue(true)
@@ -84,7 +110,7 @@ test('7nodes replica', async () => {
 })
 
 test('customize bash', async () => {
-  const fakeConfig = { network: {name: 'test'}, nodes: ['nodes']}
+  const fakeConfig = { network: { name: 'test' }, nodes: ['nodes'] }
   createCustomConfig.mockReturnValue(fakeConfig)
   isBash.mockReturnValue(true)
   isTessera.mockReturnValue(true)
@@ -101,7 +127,7 @@ test('customize bash', async () => {
 })
 
 test('customize docker', async () => {
-  const fakeConfig = { network: {name: 'test'}, nodes: []}
+  const fakeConfig = { network: { name: 'test' }, nodes: [] }
   createCustomConfig.mockReturnValue(fakeConfig)
   isBash.mockReturnValue(false)
   isTessera.mockReturnValue(true)

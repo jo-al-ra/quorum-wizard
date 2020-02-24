@@ -1,10 +1,13 @@
 import { join } from 'path'
-import { createDirectory, createStaticNodes } from './networkCreator'
-import {createConfig} from '../model/TesseraConfig'
+import { anything } from 'expect'
 import {
-  generateNodeConfigs,
+  createDirectory,
+  createStaticNodes,
+} from './networkCreator'
+import {
+  createCustomConfig,
   createReplica7NodesConfig,
-  createCustomConfig
+  generateNodeConfigs,
 } from '../model/NetworkConfig'
 import {
   copyFile,
@@ -12,10 +15,15 @@ import {
   cwd,
   libRootDir,
   readFileToString,
-  writeJsonFile
+  writeJsonFile,
 } from '../utils/fileUtils'
 import { anything } from 'expect'
-import { TEST_CWD, TEST_LIB_ROOT_DIR, createNetPath, createLibPath } from '../utils/testHelper'
+import {
+  TEST_CWD,
+  TEST_LIB_ROOT_DIR,
+  createNetPath,
+  createLibPath,
+} from '../utils/testHelper'
 import { generateConsensusConfig } from '../model/ConsensusConfig'
 
 jest.mock('../utils/execUtils')
@@ -30,13 +38,13 @@ const baseNetwork = {
   quorumVersion: '2.4.0',
   transactionManager: '0.10.2',
   cakeshop: false,
-  deployment: 'bash'
+  deployment: 'bash',
 }
 
 describe('creates a bash network', () => {
   it('rejects invalid network names', () => {
-    const names = [ '', '.', '..', '\0', '/']
-    let config = createReplica7NodesConfig(baseNetwork)
+    const names = ['', '.', '..', '\0', '/']
+    const config = createReplica7NodesConfig(baseNetwork)
     names.forEach((name) => {
       config.network.name = name
       expect(() => createDirectory(config)).toThrow(Error)
@@ -44,25 +52,55 @@ describe('creates a bash network', () => {
   })
 
   it('Creates the correct directory structure and moves files in', () => {
-    let config = createReplica7NodesConfig(baseNetwork)
+    const config = createReplica7NodesConfig(baseNetwork)
     createDirectory(config)
     expect(generateConsensusConfig).toHaveBeenCalled()
-    expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/logs`), true)
+    expect(createFolder).toBeCalledWith(createNetPath(config, 'qdata/logs'), true)
     expect(writeJsonFile).toBeCalledWith(createNetPath(config), 'config.json', config)
-    for (let i = 1; i < 6; i++) {
+    for (let i = 1; i < 6; i += 1) {
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/dd${i}`))
-      expect(writeJsonFile).toBeCalledWith(createNetPath(config, `qdata/dd${i}`), 'static-nodes.json', anything())
-      expect(writeJsonFile).toBeCalledWith(createNetPath(config, `qdata/dd${i}`), 'permissioned-nodes.json', anything())
+      expect(writeJsonFile).toBeCalledWith(
+        createNetPath(config, `qdata/dd${i}`),
+        'static-nodes.json',
+        anything(),
+      )
+      expect(writeJsonFile).toBeCalledWith(
+        createNetPath(config, `qdata/dd${i}`),
+        'permissioned-nodes.json',
+        anything(),
+      )
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/dd${i}/geth`))
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/dd${i}/keystore`))
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/c${i}`))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/key`), createNetPath(config, `qdata/dd${i}/keystore`, 'key'))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/password.txt`), createNetPath(config, `qdata/dd${i}/keystore`, 'password.txt'))
-      expect(copyFile).toBeCalledWith(createNetPath(config, 'generated', 'genesis.json'), createNetPath(config, `qdata/dd${i}`, 'genesis.json'))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/nodekey`), createNetPath(config, `qdata/dd${i}/geth`, 'nodekey'))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/tm.key`), createNetPath(config, `qdata/c${i}/tm.key`))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/tm.pub`), createNetPath(config, `qdata/c${i}/tm.pub`))
-      expect(writeJsonFile).toBeCalledWith(createNetPath(config, `qdata/c${i}`), `tessera-config-09-${i}.json`, anything())
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/key`),
+        createNetPath(config, `qdata/dd${i}/keystore`, 'key'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/password.txt`),
+        createNetPath(config, `qdata/dd${i}/keystore`, 'password.txt'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createNetPath(config, 'generated', 'genesis.json'),
+        createNetPath(config, `qdata/dd${i}`, 'genesis.json'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/nodekey`),
+        createNetPath(config, `qdata/dd${i}/geth`, 'nodekey'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/tm.key`),
+        createNetPath(config, `qdata/c${i}/tm.key`),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/tm.pub`),
+        createNetPath(config, `qdata/c${i}/tm.pub`),
+      )
+      expect(writeJsonFile).toBeCalledWith(
+        createNetPath(config, `qdata/c${i}`),
+        `tessera-config-09-${i}.json`,
+        anything(),
+      )
     }
   })
 })
@@ -72,7 +110,7 @@ describe('creates a bash network without tessera', () => {
     const names = [ '', '.', '..', '\0', '/']
     let config = createReplica7NodesConfig({
       ...baseNetwork,
-      transactionManager: 'none'
+      transactionManager: 'none',
     })
     names.forEach((name) => {
       config.network.name = name
@@ -83,7 +121,7 @@ describe('creates a bash network without tessera', () => {
   it('Creates the correct directory structure and moves files in', () => {
     let config = createReplica7NodesConfig({
       ...baseNetwork,
-      transactionManager: 'none'
+      transactionManager: 'none',
     })
     createDirectory(config)
     expect(generateConsensusConfig).toHaveBeenCalled()
@@ -106,10 +144,10 @@ describe('creates a bash network without tessera', () => {
 
 describe('creates a docker network', () => {
   it('rejects invalid network names', () => {
-    const names = [ '', '.', '..', '\0', '/']
-    let config = createReplica7NodesConfig({
+    const names = ['', '.', '..', '\0', '/']
+    const config = createReplica7NodesConfig({
       ...baseNetwork,
-      deployment: 'docker-compose'
+      deployment: 'docker-compose',
     })
     names.forEach((name) => {
       config.network.name = name
@@ -118,56 +156,116 @@ describe('creates a docker network', () => {
   })
 
   it('Creates the correct directory structure and moves files in', () => {
-    let config = createReplica7NodesConfig({
+    const config = createReplica7NodesConfig({
       ...baseNetwork,
-      deployment: 'docker-compose'
+      deployment: 'docker-compose',
     })
     createDirectory(config)
     expect(generateConsensusConfig).toHaveBeenCalled()
-    expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/logs`), true)
+    expect(createFolder).toBeCalledWith(createNetPath(config, 'qdata/logs'), true)
     expect(writeJsonFile).toBeCalledWith(createNetPath(config), 'config.json', config)
-    for (let i = 1; i < 6; i++) {
+    for (let i = 1; i < 6; i += 1) {
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/dd${i}`))
-      expect(writeJsonFile).toBeCalledWith(createNetPath(config, `qdata/dd${i}`), 'static-nodes.json', anything())
-      expect(writeJsonFile).toBeCalledWith(createNetPath(config, `qdata/dd${i}`), 'permissioned-nodes.json', anything())
+      expect(writeJsonFile).toBeCalledWith(
+        createNetPath(config, `qdata/dd${i}`),
+        'static-nodes.json',
+        anything(),
+      )
+      expect(writeJsonFile).toBeCalledWith(
+        createNetPath(config, `qdata/dd${i}`),
+        'permissioned-nodes.json',
+        anything(),
+      )
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/dd${i}/geth`))
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/dd${i}/keystore`))
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/c${i}`))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/key`), createNetPath(config, `qdata/dd${i}/keystore`, 'key'))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/password.txt`), createNetPath(config, `qdata/dd${i}/keystore`, 'password.txt'))
-      expect(copyFile).toBeCalledWith(createNetPath(config, 'generated', 'genesis.json'), createNetPath(config, `qdata/dd${i}`, 'genesis.json'))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/nodekey`), createNetPath(config, `qdata/dd${i}/geth`, 'nodekey'))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/tm.key`), createNetPath(config, `qdata/c${i}/tm.key`))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/tm.pub`), createNetPath(config, `qdata/c${i}/tm.pub`))
-      expect(writeJsonFile).toBeCalledWith(createNetPath(config, `qdata/c${i}`), `tessera-config-09-${i}.json`, anything())
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/key`),
+        createNetPath(config, `qdata/dd${i}/keystore`, 'key'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/password.txt`),
+        createNetPath(config, `qdata/dd${i}/keystore`, 'password.txt'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createNetPath(config, 'generated', 'genesis.json'),
+        createNetPath(config, `qdata/dd${i}`, 'genesis.json'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/nodekey`),
+        createNetPath(config, `qdata/dd${i}/geth`, 'nodekey'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/tm.key`),
+        createNetPath(config, `qdata/c${i}/tm.key`),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/tm.pub`),
+        createNetPath(config, `qdata/c${i}/tm.pub`),
+      )
+      expect(writeJsonFile).toBeCalledWith(
+        createNetPath(config, `qdata/c${i}`),
+        `tessera-config-09-${i}.json`,
+        anything(),
+      )
     }
   })
 
   it('Creates the correct directory structure for custom config and moves files in', () => {
-    let config = createCustomConfig({
+    const config = createCustomConfig({
       ...baseNetwork,
       deployment: 'docker-compose',
-      generateKeys: true
+      generateKeys: true,
     })
 
     createDirectory(config)
     expect(generateConsensusConfig).toHaveBeenCalled()
-    expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/logs`), true)
+    expect(createFolder).toBeCalledWith(createNetPath(config, 'qdata/logs'), true)
     expect(writeJsonFile).toBeCalledWith(createNetPath(config), 'config.json', config)
-    for (let i = 1; i < 6; i++) {
+    for (let i = 1; i < 6; i += 1) {
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/dd${i}`))
-      expect(writeJsonFile).toBeCalledWith(createNetPath(config, `qdata/dd${i}`), 'static-nodes.json', anything())
-      expect(writeJsonFile).toBeCalledWith(createNetPath(config, `qdata/dd${i}`), 'permissioned-nodes.json', anything())
+      expect(writeJsonFile).toBeCalledWith(
+        createNetPath(config, `qdata/dd${i}`),
+        'static-nodes.json',
+        anything(),
+      )
+      expect(writeJsonFile).toBeCalledWith(
+        createNetPath(config, `qdata/dd${i}`),
+        'permissioned-nodes.json',
+        anything(),
+      )
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/dd${i}/geth`))
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/dd${i}/keystore`))
       expect(createFolder).toBeCalledWith(createNetPath(config, `qdata/c${i}`))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/key`), createNetPath(config, `qdata/dd${i}/keystore`, 'key'))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/password.txt`), createNetPath(config, `qdata/dd${i}/keystore`, 'password.txt'))
-      expect(copyFile).toBeCalledWith(createNetPath(config, 'generated', 'genesis.json'), createNetPath(config, `qdata/dd${i}`, 'genesis.json'))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/nodekey`), createNetPath(config, `qdata/dd${i}/geth`, 'nodekey'))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/tm.key`), createNetPath(config, `qdata/c${i}/tm.key`))
-      expect(copyFile).toBeCalledWith(createLibPath(`7nodes/key${i}/tm.pub`), createNetPath(config, `qdata/c${i}/tm.pub`))
-      expect(writeJsonFile).toBeCalledWith(createNetPath(config, `qdata/c${i}`), `tessera-config-09-${i}.json`, anything())
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/key`),
+        createNetPath(config, `qdata/dd${i}/keystore`, 'key'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/password.txt`),
+        createNetPath(config, `qdata/dd${i}/keystore`, 'password.txt'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createNetPath(config, 'generated', 'genesis.json'),
+        createNetPath(config, `qdata/dd${i}`, 'genesis.json'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/nodekey`),
+        createNetPath(config, `qdata/dd${i}/geth`, 'nodekey'),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/tm.key`),
+        createNetPath(config, `qdata/c${i}/tm.key`),
+      )
+      expect(copyFile).toBeCalledWith(
+        createLibPath(`7nodes/key${i}/tm.pub`),
+        createNetPath(config, `qdata/c${i}/tm.pub`),
+      )
+      expect(writeJsonFile).toBeCalledWith(
+        createNetPath(config, `qdata/c${i}`),
+        `tessera-config-09-${i}.json`,
+        anything(),
+      )
     }
   })
 })
@@ -177,14 +275,14 @@ describe('creates static nodes json', () => {
     const testDir = 'generated'
     const nodes = generateNodeConfigs(3)
     const expected = [
-      "enode://abc@127.0.0.1:21000?discport=0&raftport=50401",
-      "enode://def@127.0.0.1:21001?discport=0&raftport=50402",
-      "enode://ghi@127.0.0.1:21002?discport=0&raftport=50403",
+      'enode://abc@127.0.0.1:21000?discport=0&raftport=50401',
+      'enode://def@127.0.0.1:21001?discport=0&raftport=50402',
+      'enode://ghi@127.0.0.1:21002?discport=0&raftport=50403',
     ]
     readFileToString
-    .mockReturnValueOnce('abc')
-    .mockReturnValueOnce('def')
-    .mockReturnValueOnce('ghi')
+      .mockReturnValueOnce('abc')
+      .mockReturnValueOnce('def')
+      .mockReturnValueOnce('ghi')
     expect(createStaticNodes(nodes, 'raft', testDir)).toEqual(expected)
   })
 
@@ -192,14 +290,14 @@ describe('creates static nodes json', () => {
     const testDir = 'generated'
     const nodes = generateNodeConfigs(3)
     const expected = [
-      "enode://abc@127.0.0.1:21000?discport=0",
-      "enode://def@127.0.0.1:21001?discport=0",
-      "enode://ghi@127.0.0.1:21002?discport=0",
+      'enode://abc@127.0.0.1:21000?discport=0',
+      'enode://def@127.0.0.1:21001?discport=0',
+      'enode://ghi@127.0.0.1:21002?discport=0',
     ]
     readFileToString
-    .mockReturnValueOnce('abc')
-    .mockReturnValueOnce('def')
-    .mockReturnValueOnce('ghi')
+      .mockReturnValueOnce('abc')
+      .mockReturnValueOnce('def')
+      .mockReturnValueOnce('ghi')
     expect(createStaticNodes(nodes, 'istanbul', testDir)).toEqual(expected)
   })
 })
