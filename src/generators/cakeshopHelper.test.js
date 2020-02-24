@@ -1,4 +1,3 @@
-import { join } from 'path'
 import { anything } from 'expect'
 import { createReplica7NodesConfig } from '../model/NetworkConfig'
 import {
@@ -9,7 +8,6 @@ import {
   writeJsonFile,
 } from '../utils/fileUtils'
 import { buildCakeshopDir } from './cakeshopHelper'
-import { anything } from 'expect'
 import {
   TEST_CWD,
   TEST_LIB_ROOT_DIR,
@@ -34,9 +32,9 @@ describe('creates a cakeshop directory structure for bash', () => {
     const config = createReplica7NodesConfig(baseNetwork)
 
     buildCakeshopDir(config, createNetPath(config, 'qdata'))
-    expect(createFolder).toBeCalledWith(createNetPath(config, 'qdata/cakeshop/local'), true)
+    expect(createFolder).toBeCalledWith(createNetPath(config, 'qdata', 'cakeshop', 'local'), true)
     expect(writeJsonFile).toBeCalledWith(
-      createNetPath(config, 'qdata/cakeshop/local'),
+      createNetPath(config, 'qdata', 'cakeshop', 'local'),
       'cakeshop.json',
       anything(),
     )
@@ -45,7 +43,7 @@ describe('creates a cakeshop directory structure for bash', () => {
         'lib',
         'cakeshop_application.properties.template',
       ),
-      createNetPath(config, 'qdata/cakeshop/local', 'application.properties'),
+      createNetPath(config, 'qdata', 'cakeshop', 'local', 'application.properties'),
     )
   })
 })

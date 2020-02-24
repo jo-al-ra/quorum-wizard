@@ -1,4 +1,3 @@
-import { join } from 'path'
 import { anything } from 'expect'
 import {
   TEST_CWD,
@@ -36,7 +35,7 @@ describe('generates and copies over example scripts', () => {
     )
     expect(writeFile).toBeCalledWith(
       createNetPath(config, 'private-contract.js'),
-      expect.anything(),
+      anything(),
     )
   })
 })

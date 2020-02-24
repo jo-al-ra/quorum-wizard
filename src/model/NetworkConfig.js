@@ -1,3 +1,5 @@
+import { join } from 'path'
+
 export function createQuickstartConfig() {
   return {
     network: {
@@ -9,7 +11,7 @@ export function createQuickstartConfig() {
       permissioned: true,
       genesisFile: 'none',
       generateKeys: false,
-      configDir: 'network/3-nodes-raft-tessera-bash/generated',
+      configDir: join('network', '3-nodes-raft-tessera-bash', 'generated'),
       deployment: 'bash',
       cakeshop: true,
       networkId: '10',
@@ -39,7 +41,7 @@ export function createReplica7NodesConfig(answers) {
       permissioned: true,
       genesisFile: 'none',
       generateKeys: false,
-      configDir: `network/${networkFolder}/generated`,
+      configDir: join('network', networkFolder, 'generated'),
       deployment,
       cakeshop,
       networkId: '10',
@@ -77,7 +79,7 @@ export function createCustomConfig(answers) {
       permissioned: true,
       genesisFile: genesisLocation,
       generateKeys,
-      configDir: `network/${networkFolder}/generated`,
+      configDir: join('network', networkFolder, 'generated'),
       deployment,
       cakeshop,
       networkId,

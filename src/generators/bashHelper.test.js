@@ -1,4 +1,3 @@
-import { join } from 'path'
 import { buildBashScript } from './bashHelper'
 import {
   createCustomConfig,
@@ -9,18 +8,14 @@ import {
   cwd,
   libRootDir,
 } from '../utils/fileUtils'
-import { execute } from '../utils/execUtils'
 import {
   TEST_CWD,
   TEST_LIB_ROOT_DIR,
 } from '../utils/testHelper'
 import { generateAccounts } from './consensusHelper'
-import { downloadIfMissing } from './download'
 
 jest.mock('../utils/fileUtils')
 jest.mock('../generators/consensusHelper')
-jest.mock('../utils/execUtils')
-jest.mock('./download')
 cwd.mockReturnValue(TEST_CWD)
 libRootDir.mockReturnValue(TEST_LIB_ROOT_DIR)
 generateAccounts.mockReturnValue('accounts')

@@ -1,4 +1,5 @@
 import { join } from 'path'
+import { anything } from 'expect'
 import {
   generateAccounts,
   generateExtraData,
@@ -53,7 +54,11 @@ describe('generates extraData for istanbul genesis', () => {
 
     executeSync.mockReturnValueOnce('validators')
     generateExtraData(nodes, 'testDir', 'keyPath')
-    expect(writeFile).toBeCalledWith(join('testDir', 'istanbul.toml'), expect.anything(), false)
+    expect(writeFile).toBeCalledWith(
+      join('testDir', 'istanbul.toml'),
+      anything(),
+      false,
+    )
     expect(executeSync).toBeCalledTimes(1)
   })
 })

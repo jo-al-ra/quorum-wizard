@@ -1,10 +1,20 @@
 import { join } from 'path'
 import { generateKeys } from './keyGen'
-import { isTessera } from '../model/NetworkConfig'
-import { pathToQuorumBinary, pathToBootnode, pathToTesseraJar } from './binaryHelper'
+import {
+  pathToQuorumBinary,
+  pathToBootnode,
+  pathToTesseraJar,
+} from './binaryHelper'
 import { executeSync } from '../utils/execUtils'
-import { createFolder, writeFile, cwd } from '../utils/fileUtils'
-import { TEST_CWD, createNetPath } from '../utils/testHelper'
+import {
+  createFolder,
+  writeFile,
+  cwd,
+} from '../utils/fileUtils'
+import {
+  TEST_CWD,
+  createNetPath,
+} from '../utils/testHelper'
 
 jest.mock('./binaryHelper')
 jest.mock('../utils/execUtils')
@@ -16,9 +26,9 @@ describe('generates keys', () => {
     const config = {
       network: {
         transactionManager: 'none',
-        name: 'test'
+        name: 'test',
       },
-      nodes : ['nodes']
+      nodes: ['nodes'],
     }
     pathToQuorumBinary.mockReturnValueOnce('quorumPath')
     pathToBootnode.mockReturnValue('bootnodePath')
@@ -39,9 +49,9 @@ describe('generates keys', () => {
     const config = {
       network: {
         transactionManager: 'tessera',
-        name: 'test'
+        name: 'test',
       },
-      nodes : ['nodes']
+      nodes: ['nodes'],
     }
     pathToQuorumBinary.mockReturnValueOnce('quorumPath')
     pathToBootnode.mockReturnValueOnce('bootnodePath')
@@ -55,8 +65,8 @@ describe('generates keys', () => {
   find . -type f -name 'UTC*' -execdir mv {} key ';'
   java -jar tesseraPath -keygen -filename tm`
 
-  expect(createFolder).toBeCalledWith(join(createNetPath(config), 'keyPath', `key${keyNum}`), true)
-  expect(writeFile).toBeCalledWith(join(createNetPath(config), 'keyPath', `key${keyNum}`, 'password.txt'), '')
-  expect(executeSync).toHaveBeenCalledWith(withTessera)
+    expect(createFolder).toBeCalledWith(join(createNetPath(config), 'keyPath', `key${keyNum}`), true)
+    expect(writeFile).toBeCalledWith(join(createNetPath(config), 'keyPath', `key${keyNum}`, 'password.txt'), '')
+    expect(executeSync).toHaveBeenCalledWith(withTessera)
   })
 })

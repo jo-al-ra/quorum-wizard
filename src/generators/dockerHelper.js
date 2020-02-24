@@ -13,7 +13,6 @@ import { buildCakeshopDir } from './cakeshopHelper'
 import { isTessera } from '../model/NetworkConfig'
 import { downloadAndCopyBinaries } from './binaryHelper'
 import { info } from '../utils/log'
-const yaml = require('js-yaml')
 
 export function buildDockerCompose(config) {
   const hasTessera = isTessera(config.network.transactionManager)
