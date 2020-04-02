@@ -1,5 +1,5 @@
 ![](https://github.com/QuorumEngineering/quorum-creator/workflows/Build%20&%20Test/badge.svg)
-## Developing 
+## Developing
 Clone this repo to your local machine.
 
 `yarn install` to get all the dependencies.
@@ -11,3 +11,5 @@ Clone this repo to your local machine.
 `yarn link` to use your development build when you run the global npm command
 
 `thewizard` to run (alternatively, you can run `node build/index.js`)
+
+![](wizardRecording.gif)
