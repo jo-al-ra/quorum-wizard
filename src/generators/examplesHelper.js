@@ -1,8 +1,8 @@
-import { copyFile, cwd, libRootDir, writeFile, } from '../utils/fileUtils'
-import { loadTesseraPublicKey } from './transactionManager'
-import { isDocker, isTessera } from '../model/NetworkConfig'
-import { joinPath } from '../utils/pathUtils'
-import { setEnvironmentCommand } from './bashHelper'
+import {copyFile, cwd, libRootDir, writeFile} from '../utils/fileUtils';
+import {loadTesseraPublicKey} from './transactionManager';
+import {isDocker, isTessera} from '../model/NetworkConfig';
+import {joinPath} from '../utils/pathUtils';
+import {setEnvironmentCommand} from './bashHelper';
 
 function generatePrivateContractExample(privateFor) {
   return `
@@ -27,13 +27,14 @@ var simple = simpleContract.new(42, {from:web3.eth.accounts[0], data: bytecode, 
       console.log(contract);
     }
   }
-});`
+});`;
 }
 
 export function generateAttachScript(config) {
   const bashCommand = `${setEnvironmentCommand(config)}
-$BIN_GETH attach qdata/dd$1/geth.ipc`
-  const dockerCommand = 'docker-compose exec node$1 /bin/sh -c "geth attach qdata/dd/geth.ipc"'
+$BIN_GETH attach qdata/dd$1/geth.ipc`;
+  const dockerCommand =
+    'docker-compose exec node$1 /bin/sh -c "geth attach qdata/dd/geth.ipc"';
   return `#!/bin/bash
 NUMBER_OF_NODES=${config.nodes.length}
 case "$1" in ("" | *[!0-9]*)
@@ -46,15 +47,15 @@ if [ "$1" -lt 1 ] || [ "$1" -gt $NUMBER_OF_NODES ]; then
   exit 1
 fi
 
-${isDocker(config.network.deployment) ? dockerCommand : bashCommand}`
+${isDocker(config.network.deployment) ? dockerCommand : bashCommand}`;
 }
 
 export function generateRunScript(config) {
   const bashCommand = `${setEnvironmentCommand(config)}
-$BIN_GETH --exec "loadScript(\\"$1\\")" attach qdata/dd1/geth.ipc`
+$BIN_GETH --exec "loadScript(\\"$1\\")" attach qdata/dd1/geth.ipc`;
   const dockerCommand = `docker cp $1 "$(docker-compose ps -q node1)":/$1
 docker-compose exec node1 /bin/sh -c "geth --exec 'loadScript(\\"$1\\")' attach qdata/dd/geth.ipc"
-`
+`;
 
   return `#!/bin/bash
 if [ -z $1 ] || [ ! -f $1 ]; then
@@ -63,20 +64,37 @@ if [ -z $1 ] || [ ! -f $1 ]; then
 fi
 
 ${isDocker(config.network.deployment) ? dockerCommand : bashCommand}
-`
+`;
 }
 
 // eslint-disable-next-line import/prefer-default-export
 export function generateAndCopyExampleScripts(config) {
-  const networkPath = joinPath(cwd(), 'network', config.network.name)
-  writeFile(joinPath(networkPath, 'runscript.sh'), generateRunScript(config), true)
-  writeFile(joinPath(networkPath, 'attach.sh'), generateAttachScript(config), true)
+  const networkPath = joinPath(cwd(), 'network', config.network.name);
+  writeFile(
+    joinPath(networkPath, 'runscript.sh'),
+    generateRunScript(config),
+    true,
+  );
+  writeFile(
+    joinPath(networkPath, 'attach.sh'),
+    generateAttachScript(config),
+    true,
+  );
   copyFile(
     joinPath(libRootDir(), 'lib', 'public-contract.js'),
     joinPath(networkPath, 'public-contract.js'),
-  )
+  );
   if (isTessera(config.network.transactionManager)) {
-    const nodeTwoPublicKey = loadTesseraPublicKey(config, 2)
-    writeFile(joinPath(networkPath, 'private-contract.js'), generatePrivateContractExample(nodeTwoPublicKey))
+    try {
+      const nodeTwoPublicKey = loadTesseraPublicKey(config, 2);
+      writeFile(
+        joinPath(networkPath, 'private-contract.js'),
+        generatePrivateContractExample(nodeTwoPublicKey),
+      );
+    } catch (error) {
+      console.log(
+        'cant generate private contract example because you are just using 1 node',
+      );
+    }
   }
 }
